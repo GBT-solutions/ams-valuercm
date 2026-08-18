@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asset Submission Notification</title>
+    <style>
+        /* Reset styles for better compatibility */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; }
+        
+        /* Responsive Media Query for Mobile */
+        @media screen and (max-width: 600px) {
+            .email-container { width: 100% !important; }
+            .hide-on-mobile { display: none !important; }
+            .table-responsive { display: block; width: 100%; overflow-x: auto; }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f4f5; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f4f4f5; padding: 20px 0;">
+        <tr>
+            <td align="center">
+                
+                <table border="0" cellpadding="0" cellspacing="0" width="600" class="email-container" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color: #2563eb; padding: 24px; text-align: center;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold; letter-spacing: 1px;">
+                                📥 Asset Submission Alert
+                            </h1>
+                            <p style="color: #bfdbfe; margin: 5px 0 0 0; font-size: 14px;">
+                                New Assets Submitted – Review Required
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Body -->
+                    <tr>
+                        <td style="padding: 30px;">
+                            <p style="color: #374151; font-size: 16px; line-height: 24px; margin-bottom: 20px;">
+                                Hello,
+                            </p>
+                            <p style="color: #374151; font-size: 16px; line-height: 24px; margin-bottom: 24px;">
+                                <%= submissionText %>
+                            </p>
+
+                            <!-- Table -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; min-width: 100%;">
+                                <thead>
+                                    <tr style="background-color: #f3f4f6; text-align: left;">
+                                        <th style="padding: 12px; border-bottom: 2px solid #e5e7eb; color: #4b5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Asset ID</th>
+                                        <th style="padding: 12px; border-bottom: 2px solid #e5e7eb; color: #4b5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Employee</th>
+                                        <!-- <th style="padding: 12px; border-bottom: 2px solid #e5e7eb; color: #4b5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Assigned at</th> -->
+                                        <th style="padding: 12px; border-bottom: 2px solid #e5e7eb; color: #4b5563; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Submission Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (rows && rows.length > 0) { %>
+                                        <% rows.forEach((row, index) => { %>
+                                            <tr style="background-color: <%= index % 2 === 0 ? '#ffffff' : '#f9fafb' %>;">
+                                                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 14px; font-weight: bold;">
+                                                    #<%= row.asset_id %>
+                                                    <div style="font-size: 11px; color: #6b7280; font-weight: normal;">SN: <%= row.serial %></div>
+                                                </td>
+                                                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; color: #374151; font-size: 14px;">
+                                                    <%= row.name %>
+                                                    <div style="font-size: 12px; color: #6b7280;"><%= row.emp_code %></div>
+                                                </td>
+                                                <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; color: #2563eb; font-size: 14px; font-weight: bold;">
+                                                    <%= row.submission_date %>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="3" style="padding: 20px; text-align: center; color: #6b7280;">
+                                                No submitted assets found.
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                            
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
+                            <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                                This is an automated notification. Please do not reply to this email.
+                            </p>
+                            <p style="margin: 5px 0 0 0; color: #9ca3af; font-size: 12px;">
+                                &copy; <%= new Date().getFullYear() %> Asset Management System
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+                <br><br>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

@@ -1,0 +1,199 @@
+<%
+  let healthyCount = 0;
+  let totalCount = services.length;
+  services.forEach(s => {
+    const stat = s.status ? s.status.toLowerCase() : 'unknown';
+    if (stat === 'running' || stat === 'online' || stat === 'active') {
+      healthyCount++;
+    }
+  });
+  let warningCount = totalCount - healthyCount;
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services Status Report</title>
+    <style>
+        /* General resets for email compatibility */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; }
+        
+        /* Mobile responsive adjustments */
+        @media screen and (max-width: 620px) {
+            .email-container { width: 100% !important; }
+            .stack-on-mobile { display: block !important; width: 100% !important; box-sizing: border-box !important; }
+            .hide-on-mobile { display: none !important; }
+            .metric-card { margin-bottom: 10px !important; }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f1f5f9; padding: 40px 0;">
+        <tr>
+            <td align="center">
+                
+                <table border="0" cellpadding="0" cellspacing="0" width="620" class="email-container" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color: #0f172a; padding: 32px 24px; text-align: center;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; display: inline-flex; align-items: center; justify-content: center;">
+                                <span style="margin-right: 8px;">🖥️</span> System Services Report
+                            </h1>
+                            <p style="color: #94a3b8; margin: 8px 0 0 0; font-size: 13px;">
+                                Generated on <%= reportTime %>
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Body Content -->
+                    <tr>
+                        <td style="padding: 32px 24px;">
+                            
+                            <!-- Metrics Section -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 24px;">
+                                <tr>
+                                    <!-- Total Services -->
+                                    <td class="stack-on-mobile" width="31%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; text-align: center;">
+                                        <div style="font-size: 11px; color: #64748b; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Total Services</div>
+                                        <div style="font-size: 24px; color: #0f172a; font-weight: bold;"><%= totalCount %></div>
+                                    </td>
+                                    <!-- Spacer -->
+                                    <td class="hide-on-mobile" width="3%">&nbsp;</td>
+                                    <!-- Online Services -->
+                                    <td class="stack-on-mobile" width="31%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; text-align: center;">
+                                        <div style="font-size: 11px; color: #16a34a; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Online</div>
+                                        <div style="font-size: 24px; color: #166534; font-weight: bold;"><%= healthyCount %></div>
+                                    </td>
+                                    <!-- Spacer -->
+                                    <td class="hide-on-mobile" width="3%">&nbsp;</td>
+                                    <!-- Issues -->
+                                    <td class="stack-on-mobile" width="31%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; text-align: center;">
+                                        <div style="font-size: 11px; color: #dc2626; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Alerts</div>
+                                        <div style="font-size: 24px; color: #991b1b; font-weight: bold;"><%= warningCount %></div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Dynamic Banner -->
+                            <% if (warningCount > 0) { %>
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #fef2f2; border-left: 4px solid #ef4444; border-radius: 4px; margin-bottom: 28px;">
+                                    <tr>
+                                        <td style="padding: 16px;">
+                                            <p style="margin: 0; color: #991b1b; font-size: 14px; font-weight: 600; line-height: 20px;">
+                                                ⚠️ Attention: <%= warningCount %> service(s) require review. Please check the status table below.
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            <% } else { %>
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f0fdf4; border-left: 4px solid #22c55e; border-radius: 4px; margin-bottom: 28px;">
+                                    <tr>
+                                        <td style="padding: 16px;">
+                                            <p style="margin: 0; color: #166534; font-size: 14px; font-weight: 600; line-height: 20px;">
+                                                ✅ All systems functional. All monitored services are online and operating normally.
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            <% } %>
+
+                            <!-- Services Table -->
+                            <h2 style="color: #0f172a; font-size: 16px; font-weight: 700; margin: 0 0 16px 0; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+                                Monitored Services Status
+                            </h2>
+                            
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; min-width: 100%;">
+                                <thead>
+                                    <tr style="background-color: #f8fafc; text-align: left;">
+                                        <th style="padding: 12px 16px; border-bottom: 2px solid #e2e8f0; color: #64748b; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Service</th>
+                                        <th style="padding: 12px 16px; border-bottom: 2px solid #e2e8f0; color: #64748b; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; text-align: right;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (services && services.length > 0) { %>
+                                        <% services.forEach((service, index) => { %>
+                                            <tr style="background-color: <%= index % 2 === 0 ? '#ffffff' : '#f8fafc' %>;">
+                                                <td style="padding: 14px 16px; border-bottom: 1px solid #e2e8f0; font-size: 14px; color: #0f172a; font-weight: 600; line-height: 20px;">
+                                                    <%= service.name %>
+                                                    <% if (service.description) { %>
+                                                        <div style="font-size: 11px; color: #64748b; font-weight: normal; margin-top: 2px;"><%= service.description %></div>
+                                                    <% } %>
+                                                </td>
+                                                <td style="padding: 14px 16px; border-bottom: 1px solid #e2e8f0; font-size: 14px; vertical-align: middle; text-align: right;">
+                                                    <% 
+                                                        const stat = service.status ? service.status.toLowerCase() : 'unknown';
+                                                        if (stat === 'running' || stat === 'online' || stat === 'active') { 
+                                                    %>
+                                                        <span style="background-color: #dcfce7; color: #166534; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; display: inline-block;">
+                                                            Online
+                                                        </span>
+                                                    <% } else if (stat === 'degraded' || stat === 'warning') { %>
+                                                        <span style="background-color: #fef9c3; color: #854d0e; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; display: inline-block;">
+                                                            Degraded
+                                                        </span>
+                                                    <% } else { %>
+                                                        <span style="background-color: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; display: inline-block;">
+                                                            <%= service.status ? service.status.toUpperCase() : 'OFFLINE' %>
+                                                        </span>
+                                                    <% } %>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                        <% if (typeof lastBackup !== 'undefined' && lastBackup) { %>
+                                            <tr style="background-color: #f8fafc;">
+                                                <td style="padding: 14px 16px; border-bottom: 1px solid #e2e8f0; font-size: 14px; color: #0f172a; font-weight: 600; line-height: 20px;">
+                                                    Last Database Backup
+                                                    <div style="font-size: 11px; color: #64748b; font-weight: normal; margin-top: 2px;">Automated daily system backup</div>
+                                                </td>
+                                                <td style="padding: 14px 16px; border-bottom: 1px solid #e2e8f0; font-size: 13px; color: #475569; vertical-align: middle; text-align: right; font-weight: 600;">
+                                                    <%= lastBackup %>
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="2" style="padding: 32px; text-align: center; color: #64748b; font-size: 14px;">
+                                                No monitored services found.
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                            
+                            <!-- Action button (e.g. View Dashboard) -->
+                            <% if (typeof dashboardUrl !== 'undefined' && dashboardUrl) { %>
+                                <div style="text-align: center; margin-top: 32px;">
+                                    <a href="<%= dashboardUrl %>" target="_blank" style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-block; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);">
+                                        Open Status Dashboard
+                                    </a>
+                                </div>
+                            <% } %>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f8fafc; padding: 24px; text-align: center; border-top: 1px solid #e2e8f0;">
+                            <p style="margin: 0; color: #94a3b8; font-size: 12px; line-height: 18px;">
+                                This is an automated diagnostic email sent by the System Monitor. Please do not reply directly.
+                            </p>
+                            <p style="margin: 6px 0 0 0; color: #94a3b8; font-size: 12px; line-height: 18px;">
+                                &copy; <%= new Date().getFullYear() %> Asset Management System
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+                <br><br>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>
