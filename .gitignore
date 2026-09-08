@@ -55,3 +55,4 @@ backend/utils/sendMail.js
 /*.csv
 /*.txt
 *ams
+backend/main.js

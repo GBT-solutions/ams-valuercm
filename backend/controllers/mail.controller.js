@@ -87,8 +87,8 @@ const checkExpDate = async () => {
 const checkSubmissionDate = async () => {
     try {
         let daysBefore = 3,
-            subEmails = "";
-        submissionText = "";
+            subEmails = "",
+            submissionText = "";
 
         // Fetch config values for submission notifications
         const [details] =
@@ -126,7 +126,7 @@ const checkSubmissionDate = async () => {
                 employees_a1b2c3d4 e ON t.employee_id = e.id
             WHERE
                 t.assigned_submission IS NOT NULL AND
-                t.assigned_submission BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 3 DAY);`,
+                t.assigned_submission BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL ? DAY);`,
             [daysBefore]
         );
 

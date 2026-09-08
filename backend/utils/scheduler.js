@@ -9,6 +9,7 @@ const pool = require("./dbConnect");
 
 let backupTasks = [];
 let runningMailTasks = [];
+let dailyNotificationTasks = [];
 
 const timeToCron = (timeStr, defaultCron) => {
     if (!timeStr) return defaultCron;
@@ -48,6 +49,9 @@ const initScheduler = async () => {
         runningMailTasks.forEach((task) => task.stop());
         runningMailTasks = [];
 
+        dailyNotificationTasks.forEach((task) => task.stop());
+        dailyNotificationTasks = [];
+
         const [rows] = await pool.query(
             `SELECT config_key, value FROM config_a1b2c3d4 WHERE config_key = 'backup_schedule' OR config_key = 'status_report_schedule'`
         );
@@ -66,13 +70,24 @@ const initScheduler = async () => {
             ["05:00"]
         );
 
+        // Daily notifications (Asset Expiry and Submission Check) at 06:00 AM
+        const dailyNotificationTask = cron.schedule(
+            "0 0 6 * * *",
+            () => {
+                checkExpDate();
+                checkSubmissionDate();
+            },
+            {
+                timezone: "Asia/Kolkata",
+            }
+        );
+        dailyNotificationTasks.push(dailyNotificationTask);
+
         backupCronPatterns.forEach((pattern) => {
             if (cron.validate(pattern)) {
                 const task = cron.schedule(
                     pattern,
                     () => {
-                        checkExpDate();
-                        checkSubmissionDate();
                         backupDatabase();
                     },
                     {

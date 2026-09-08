@@ -2,6 +2,8 @@ const fs = require("fs-extra");
 const path = require("path");
 const { sendBackupFailedMail } = require("./controllers/mail.controller");
 require("dotenv").config();
+const { initLogger } = require("./utils/logger");
+initLogger();
 const { exec, fork } = require("child_process");
 const util = require("util");
 const execPromise = util.promisify(exec);
@@ -32,7 +34,7 @@ const getTimeStamp = () => {
 async function backupDatabaseLocally() {
     await fs.ensureDir(BACKUP_DIR);
     const mysqldumpPath =
-        '"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysqldump.exe"';
+        '"C:\\Program Files\\MySQL\\MySQL Server 8.4\\bin\\mysqldump.exe"';
 
     const timestamp = getTimeStamp();
     const sqlFileName = `backup_${process.env.DB_NAME}_${timestamp}.sql`;
@@ -98,7 +100,9 @@ async function clearNetworkConnections(finalIp, networkPath) {
                     const match = line.match(/([A-Z]:|\\\\[\w.-]+\\[^\s]+)/i);
                     if (match && match[1]) {
                         try {
-                            await execPromise(`net use "${match[1]}" /delete /y`);
+                            await execPromise(
+                                `net use "${match[1]}" /delete /y`
+                            );
                         } catch (err) {}
                     }
                 }
@@ -324,11 +328,11 @@ async function runBackupTask(fromApi = false) {
         ? lastError.message || String(lastError)
         : `Failed to backup data after ${retryCount} attempts`;
 
-    sendBackupFailedMail(finalErrorReason)
-        .then(() => {})
-        .catch((err) => {
-            console.log(err);
-        });
+    try {
+        await sendBackupFailedMail(finalErrorReason);
+    } catch (err) {
+        console.error("Error sending backup failed mail:", err);
+    }
 
     return;
 }
@@ -343,7 +347,7 @@ async function runRestoreTask(amsFilePath) {
         await decryptFile(amsFilePath, tempSqlPath);
 
         const mysqlPath =
-            '"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe"';
+            '"C:\\Program Files\\MySQL\\MySQL Server 8.4\\bin\\mysql.exe"';
         const cmd = `${mysqlPath} -u ${process.env.DB_USER} -p${process.env.DB_PASSWORD} ${process.env.DB_NAME} < "${tempSqlPath}"`;
 
         await execPromise(cmd);
