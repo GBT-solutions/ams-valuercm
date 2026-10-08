@@ -112,6 +112,8 @@ The backend dynamically initializes isolated tables for each tenant (`tenantId`)
    JWT_EXPIRE=8h
    COOKIE_EXPIRE=8
    NODE_ENV="dev"
+   MAIL_USER=abc@example.com
+   ENCRYPTION_KEY=011016cbec477ff83237e060b07fac691dc913802ba912d1ab672dac0cb7cf2c
    ```
 
 ### **3. Installation & Development**
